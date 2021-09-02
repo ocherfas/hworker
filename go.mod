@@ -26,4 +26,5 @@ require (
 	github.com/vcaesar/tt v0.11.0 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
 	golang.org/x/sys v0.0.0-20210820121016-41cdb8703e55 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
