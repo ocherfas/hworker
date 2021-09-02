@@ -8,12 +8,22 @@ import (
 	hook "github.com/robotn/gohook"
 )
 
-const secondsActivicy = 15
-const activityMax = secondsActivicy * time.Second
-const inactivityTime = 5 * time.Second
+const maxActivityTimeString = "15s"
+const inactivityTimeString = "5s"
 
 func main() {
 	fmt.Println("Running...")
+
+	maxTimeActivity, errParse1 := time.ParseDuration(maxActivityTimeString)
+	if errParse1 != nil {
+		err := fmt.Errorf("Incorrect format for max time activity")
+		panic(err)
+	}
+	inactivityTime, errParse2 := time.ParseDuration(inactivityTimeString)
+	if errParse2 != nil {
+		err := fmt.Errorf("Incorrect format for inactivity time")
+		panic(err)
+	}
 
 	activityStart := time.Now()
 	lastActionTime := time.Now()
@@ -21,13 +31,11 @@ func main() {
 	newEvent := func() {
 		currentTime := time.Now()
 		if currentTime.Sub(lastActionTime) >= inactivityTime {
-
 			activityStart = currentTime
 			lastActionTime = currentTime
 			return
-		} else if currentTime.Sub(activityStart) >= activityMax {
-
-			message := fmt.Sprintf("You worked for %d already! You should take a break.\nLet your eyes rest for a bit :)", secondsActivicy)
+		} else if currentTime.Sub(activityStart) >= maxTimeActivity {
+			message := fmt.Sprintf("You worked for %s already! You should take a break.\nLet your eyes rest for a bit :)", maxTimeActivity)
 			err := beeep.Notify("Take a break!", message, "")
 			if err != nil {
 				panic(err)
