@@ -28,7 +28,7 @@ func main() {
 			return
 		} else if currentTime.Sub(activityStart) >= config.maxActivityTime {
 			message := fmt.Sprintf("You worked for %s already! You should take a break.\nLet your eyes rest for a bit :)", config.maxActivityTime)
-			err := beeep.Notify("Take a break!", message, "")
+			err := beeep.Alert("Take a break!", message, "")
 			if err != nil {
 				panic(err)
 			}
