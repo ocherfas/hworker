@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -18,7 +20,14 @@ func NewConfig() Config {
 }
 
 func (config *Config) readConfig() error {
-	yfile, err := ioutil.ReadFile("config.yaml")
+	ex, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	exPath := filepath.Dir(ex)
+
+	configFilePath := filepath.Join(exPath, "..", "config.yaml")
+	yfile, err := ioutil.ReadFile(configFilePath)
 	if err != nil {
 		return err
 	}
