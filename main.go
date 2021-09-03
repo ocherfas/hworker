@@ -4,41 +4,55 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gen2brain/beeep"
 	hook "github.com/robotn/gohook"
 )
+
+func convertConfigToActivityMonitors(config Config) ([]*ActivityMonitor, error) {
+	activityMonitors := []*ActivityMonitor{}
+	for i, v := range config.ActivityMonitorConfigs {
+		maxTimeActivity, errParse1 := time.ParseDuration(v.MaxActivityTime)
+		if errParse1 != nil {
+			err := fmt.Errorf("ActivityMonitor config number %d incorrect: Incorrect format for max time activity", i+1)
+			return nil, err
+		}
+		inactivityTime, errParse2 := time.ParseDuration(v.InactivityTime)
+		if errParse2 != nil {
+			err := fmt.Errorf("ActivityMonitor config number %d incorrect: Incorrect format for max time activity", i+1)
+			return nil, err
+		}
+
+		newActivityMonitor := NewActivityMonitor(inactivityTime, maxTimeActivity, v.MessageFormat)
+		activityMonitors = append(activityMonitors, &newActivityMonitor)
+	}
+
+	return activityMonitors, nil
+}
 
 func main() {
 	config := NewConfig()
 	err := config.readConfig()
+
+	if err != nil {
+		panic(err)
+	}
+
+	activityMonitors, err := convertConfigToActivityMonitors(config)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println("Running...")
 
-	activityStart := time.Now()
-	lastActionTime := time.Now()
+	for _, v := range activityMonitors {
+		v.StartMonitor()
+	}
 
 	newEvent := func() {
-		currentTime := time.Now()
-		if currentTime.Sub(lastActionTime) >= config.inactivityTime {
-			activityStart = currentTime
-			lastActionTime = currentTime
-			return
-		} else if currentTime.Sub(activityStart) >= config.maxActivityTime {
-			message := fmt.Sprintf("You worked for %s already! You should take a break.\nLet your eyes rest for a bit :)", config.maxActivityTime)
-			err := beeep.Alert("Take a break!", message, "")
+		for _, v := range activityMonitors {
+			err := v.newEvent()
 			if err != nil {
 				panic(err)
 			}
-
-			activityStart = currentTime
-			lastActionTime = currentTime
-			return
-		} else {
-			lastActionTime = currentTime
-			return
 		}
 	}
 

@@ -1,2 +1,8 @@
-max-activity-time: 15s
-inactivity-timeout: 5s
+activity-monitors:
+  - max-activity-time: 15s
+    inactivity-time: 5s
+    message-format: You worked for %s already! Let your eyes rest!
+  - max-activity-time: 30s
+    inactivity-time: 5s
+    message-format: You worked for %s! Go take a walk!
+
