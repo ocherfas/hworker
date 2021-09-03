@@ -24,13 +24,20 @@ Having said that - Should not encounter that many problems with mac or windows, 
 Installation will install the application on `/usr/local/hworker/`. There you can find the file `config.yaml` and in it you will find the configuration options:
 
 ```
-max-activity-time: 5m
-inactivity-timeout: 30s 
+activity-monitors:
+  - max-activity-time: 15s
+    inactivity-time: 5s
+    message-format: message1 %s
+  - max-activity-time: 30s
+    inactivity-time: 5s
+    message-format: message2 %s
 ```
 
-`max-activity-time:` <span style="color:green"># After how much time should pop up the notification.</span>
+`max-activity-time:` # After how much time should pop up the notification.
 
-`inactivity-timeout:` <span style="color:green"># Inactivity timeout. If user did not have any  activity during that time, the timer for the notification will be reset.</span>
+`inactivity-time:` # Inactivity timeout. If user did not have any  activity during that time, the timer for the notification will be reset.
+
+`message-format:` # The message that will be shown to the user for continious activity. Use %s to place the `max-activity-time` value inside the message.
 
 # Contact me
 Feel free to contact me for any suggestion, contribution, question, or anything else.
