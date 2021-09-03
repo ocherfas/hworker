@@ -1,8 +1,8 @@
 activity-monitors:
-  - max-activity-time: 15s
-    inactivity-time: 5s
-    message-format: You worked for %s already! Let your eyes rest!
-  - max-activity-time: 30s
-    inactivity-time: 5s
-    message-format: You worked for %s! Go take a walk!
+  - max-activity-time: 5m
+    inactivity-time: 30s
+    message-format: You worked for %s already! Let your eyes rest for a bit.
+  - max-activity-time: 30m
+    inactivity-time: 1m
+    message-format: You worked for %s already! Go take a walk.
 
