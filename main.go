@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/getlantern/systray"
 	hook "github.com/robotn/gohook"
 )
 
@@ -41,28 +42,39 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Running...")
+	systray.Run(func() {
+		systray.SetTooltip("Healty Worker")
+		systray.SetTitle("Healty Worker")
+		mQuit := systray.AddMenuItem("Quit", "Quit")
 
-	for _, v := range activityMonitors {
-		v.StartMonitor()
-	}
-
-	newEvent := func() {
 		for _, v := range activityMonitors {
-			err := v.newEvent()
-			if err != nil {
-				panic(err)
+			v.StartMonitor()
+		}
+
+		newEvent := func() {
+			for _, v := range activityMonitors {
+				err := v.newEvent()
+				if err != nil {
+					panic(err)
+				}
 			}
 		}
-	}
 
-	hook.Register(hook.KeyDown, []string{}, func(e hook.Event) {
-		newEvent()
-	})
-	hook.Register(hook.MouseMove, []string{}, func(e hook.Event) {
-		newEvent()
-	})
+		hook.Register(hook.KeyDown, []string{}, func(e hook.Event) {
+			newEvent()
+		})
+		hook.Register(hook.MouseMove, []string{}, func(e hook.Event) {
+			newEvent()
+		})
 
-	s := hook.Start()
-	<-hook.Process(s)
+		s := hook.Start()
+		hook.Process(s)
+
+		go func() {
+			<-mQuit.ClickedCh
+			systray.Quit()
+		}()
+	}, func() {
+		hook.End()
+	})
 }
