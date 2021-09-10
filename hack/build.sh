@@ -1,3 +1,5 @@
-rm -rf ./out
-mkdir out
-go build -o ./out/hworker
+SCRIPT=`realpath $0`
+SCRIPTPATH=`dirname $SCRIPT`
+rm -rf $SCRIPTPATH/../out
+mkdir $SCRIPTPATH/../out
+go build -o $SCRIPTPATH/../out/hworker $SCRIPTPATH/..
