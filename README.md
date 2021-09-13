@@ -18,10 +18,14 @@ Having said that - Should not encounter that many problems with mac or windows, 
 
 ## Build
 `./hack/build.sh`
-## Install
-`sudo ./hack/install.sh`
+
+Will output the binary to `out/hworker`
 ## Configuration
-Installation will install the application on `/usr/local/hworker/`. There you can find the file `config.yaml` and in it you will find the configuration options:
+Configuration file path can be supplied through the environment variable `HWORKER_CONFIG`.
+
+If the environment variable is not set hworker will try to read the file from the relative path `../config.yaml`.
+
+An example for the configuration file format:
 
 ```
 activity-monitors:
