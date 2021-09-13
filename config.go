@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -23,19 +24,26 @@ func NewConfig() Config {
 }
 
 func (config *Config) readConfig() error {
-	ex, err := os.Executable()
-	if err != nil {
-		return err
-	}
-	exPath := filepath.Dir(ex)
+	configPath := os.Getenv("HWORKER_CONFIG")
+	if configPath == "" {
+		log.Println("HWORKER_CONFIG was not supplied. Reading from default path.")
+		ex, err := os.Executable()
+		if err != nil {
+			return err
+		}
+		exPath := filepath.Dir(ex)
 
-	configFilePath := filepath.Join(exPath, "..", "config.yaml")
-	yfile, err := ioutil.ReadFile(configFilePath)
+		configPath = filepath.Join(exPath, "..", "config.yaml")
+	}
+
+	yfile, err := ioutil.ReadFile(configPath)
 	if err != nil {
 		return err
 	}
 
 	err = yaml.Unmarshal(yfile, config)
+
+	log.Printf("Successfully read config file from path %s\n", configPath)
 
 	return err
 }

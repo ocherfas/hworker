@@ -43,8 +43,8 @@ func main() {
 	}
 
 	systray.Run(func() {
-		systray.SetTooltip("Healty Worker")
-		systray.SetTitle("Healty Worker")
+		systray.SetTooltip("Healthy Worker")
+		systray.SetTitle("Healthy Worker")
 		mQuit := systray.AddMenuItem("Quit", "Quit")
 
 		for _, v := range activityMonitors {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/gen2brain/beeep"
@@ -35,11 +36,14 @@ func (activityMonitor *ActivityMonitor) newEvent() error {
 	if currentTime.Sub(activityMonitor.lastActionTime) >= activityMonitor.inactivityTime {
 		activityMonitor.activityStart = currentTime
 		activityMonitor.lastActionTime = currentTime
+
+		log.Println("Exceeded inactivity time.")
+
 		return nil
 	} else if currentTime.Sub(activityMonitor.activityStart) >= activityMonitor.maxActivityTime {
 		message := fmt.Sprintf(activityMonitor.messageFormat, activityMonitor.maxActivityTime)
 		err := beeep.Alert("Take a break!", message, "")
-
+		log.Println("Exceeded max activity time")
 		activityMonitor.activityStart = currentTime
 		activityMonitor.lastActionTime = currentTime
 		return err
