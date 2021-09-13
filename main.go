@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/getlantern/systray"
-	hook "github.com/robotn/gohook"
 )
 
 func convertConfigToActivityMonitors(config Config) ([]*ActivityMonitor, error) {
@@ -29,6 +28,9 @@ func convertConfigToActivityMonitors(config Config) ([]*ActivityMonitor, error) 
 	return activityMonitors, nil
 }
 
+const ENABLE_TEXT = "Enable"
+const DISABLE_TEXT = "Disable"
+
 func main() {
 	config := NewConfig()
 	err := config.readConfig()
@@ -42,39 +44,41 @@ func main() {
 		panic(err)
 	}
 
+	eventHandler := NewEventHandler(activityMonitors)
+
 	systray.Run(func() {
 		systray.SetTooltip("Healthy Worker")
 		systray.SetTitle("Healthy Worker")
+
+		mEnable := systray.AddMenuItem("", "")
 		mQuit := systray.AddMenuItem("Quit", "Quit")
 
-		for _, v := range activityMonitors {
-			v.StartMonitor()
-		}
-
-		newEvent := func() {
-			for _, v := range activityMonitors {
-				err := v.newEvent()
-				if err != nil {
-					panic(err)
-				}
+		toggleAndSet := func() {
+			eventHandler.toggle()
+			if eventHandler.Enabled {
+				mEnable.SetTitle(DISABLE_TEXT)
+				mEnable.SetTooltip(DISABLE_TEXT)
+			} else {
+				mEnable.SetTitle(ENABLE_TEXT)
+				mEnable.SetTooltip(ENABLE_TEXT)
 			}
 		}
 
-		hook.Register(hook.KeyDown, []string{}, func(e hook.Event) {
-			newEvent()
-		})
-		hook.Register(hook.MouseMove, []string{}, func(e hook.Event) {
-			newEvent()
-		})
-
-		s := hook.Start()
-		hook.Process(s)
+		toggleAndSet()
 
 		go func() {
-			<-mQuit.ClickedCh
-			systray.Quit()
+			for {
+				select {
+				case <-mQuit.ClickedCh:
+					systray.Quit()
+					return
+				case <-mEnable.ClickedCh:
+					toggleAndSet()
+				}
+			}
+
 		}()
 	}, func() {
-		hook.End()
+		eventHandler.end()
 	})
 }
